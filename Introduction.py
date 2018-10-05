@@ -1,7 +1,3 @@
-# ATAT
-# GATATATGCATATACTT
-
-
 NUCLEOTIDES = ('A', 'T', 'G', 'C')
 
 
@@ -29,6 +25,20 @@ def frequent_words(k, genome):
     return frequent_list
 
 
+def reverse_complement(genome):
+    res = ''
+    for i in range(len(genome)-1, -1, -1):
+        if genome[i] == 'A':
+            res += 'T'
+        elif genome[i] == 'T':
+            res += 'A'
+        elif genome[i] == 'G':
+            res += 'C'
+        elif genome[i] == 'C':
+            res += 'G'
+    return res
+
+
 def main():
     pattern = 'ATAT'
     genome = 'GATATATGCATATACTT'
@@ -36,10 +46,10 @@ def main():
 
     k = 4
     genome2 = 'ACGTTGCATGTCGCATGATGCATGAGAGCT'
-    lst = frequent_words(k, genome2)
-    lst.sort()
-    print(lst[0], lst[1])
+    print(frequent_words(k, genome2))
 
+    genome3 = 'AAAACCCGGT'
+    print(reverse_complement(genome3))
 
 
 main()
