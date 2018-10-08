@@ -12,12 +12,10 @@ def pattern_count(pattern, genome):
 def frequent_words(k, genome):
     frequent_list = []
     dic = {}
-    for i in NUCLEOTIDES:
-        for j in NUCLEOTIDES:
-            for k in NUCLEOTIDES:
-                for l in NUCLEOTIDES:
-                    string = i+j+k+l
-                    dic.update({string: pattern_count(string, genome)})
+    for i in range(len(genome)-k):
+        current = genome[i: i+k]
+        if current not in dic:
+            dic.update({current: pattern_count(current, genome)})
     maximum = max([dic[key] for key in dic])
     for key in dic:
         if dic[key] == maximum:
