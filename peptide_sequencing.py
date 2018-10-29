@@ -1,4 +1,4 @@
-from itertools import product
+#from itertools import product
 
 
 def get_codon_table():
@@ -92,7 +92,7 @@ def reverse_rna(rna):
     return result'''
 
 
-def peptide_encoding_problem(dna, amino_acid):
+def peptide_encoding(dna, amino_acid):
     rna = dna_to_rna(dna)
     window_size = len(amino_acid)*3
     result = []
@@ -104,13 +104,54 @@ def peptide_encoding_problem(dna, amino_acid):
     return result
 
 
+def subpeptides_count(length):
+    return length * (length - 1)
+
+
+def get_mass_table():
+    return {'G': 57, 'A': 71, 'S': 87, 'P': 97, 'V': 99, 'T': 101, 'C': 103, 'I': 113, 'L': 113, 'N': 114,
+            'D': 115, 'K': 128, 'Q': 128, 'E': 129, 'M': 131, 'H': 137, 'F': 147, 'R': 156, 'Y': 163, 'W': 186}
+
+
+def get_mass(amino_acid):
+    summ = 0
+    mass_table = get_mass_table()
+    for el in amino_acid:
+        summ += mass_table[el]
+    return summ
+
+
+def get_theoretical_spectrum(amino_acid):
+    spectrum = [0]
+    length = len(amino_acid)
+    for window_size in range(1, length):
+        for i in range(1, length+1):
+            if i-window_size < 0:
+                spectrum.append(get_mass(amino_acid[i-window_size:] + amino_acid[: i]))
+            else:
+                spectrum.append(get_mass(amino_acid[i - window_size: i]))
+    spectrum.append(get_mass(amino_acid))
+    spectrum.sort()
+    return spectrum
+
+
+def peptide_count(mass):
+
+
+
 def main():
     rna_string = 'AUGGCCAUGGCGCCCAGAACUGAGAUCAAUAGUACCCGUAUUAACGGGUGA'
     print(protein_translation(rna_string))
 
     dna = 'ATGGCCATGGCCCCCAGAACTGAGATCAATAGTACCCGTATTAACGGGTGA'
     amino_acid = 'MA'
-    print(peptide_encoding_problem(dna, amino_acid))
+    print(peptide_encoding(dna, amino_acid))
+
+    length = 34215
+    print(subpeptides_count(length))
+
+    amino_acid = 'LEQN'
+    print(get_theoretical_spectrum(amino_acid))
 
 
 main()
