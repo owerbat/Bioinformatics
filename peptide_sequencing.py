@@ -136,7 +136,19 @@ def get_theoretical_spectrum(amino_acid):
 
 
 def peptide_count(mass):
-
+    masses = (57, 71, 87, 97, 99, 101, 103, 113, 114, 115, 128, 129, 131, 137, 147, 156, 163, 186)
+    N = {0: 1}
+    for i in range(57, 243):
+        N[i] = 0
+        for j in range(len(masses)):
+            k = i - masses[j]
+            if k in N:
+                N[i] += N[k]
+    for i in range(243, mass+1):
+        N[i] = 0
+        for j in range(len(masses)):
+            N[i] += N[i-masses[j]]
+    return N[mass]
 
 
 def main():
@@ -152,6 +164,9 @@ def main():
 
     amino_acid = 'LEQN'
     print(get_theoretical_spectrum(amino_acid))
+
+    mass = 1024
+    print(peptide_count(mass))
 
 
 main()
