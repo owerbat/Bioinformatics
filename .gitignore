@@ -1,3 +1,4 @@
 # PyCharm exceptions
 .idea/
 venv/
+ __pycache__/

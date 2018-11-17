@@ -100,7 +100,7 @@ def peptide_encoding(dna, amino_acid):
         if protein_translation(rna[i: i+window_size]) == amino_acid:
             result.append(dna[i: i+window_size])
         if protein_translation(reverse_rna(rna[i: i+window_size])) == amino_acid:
-            result.append(dna[i: i + window_size])
+            result.append(dna[i: i+window_size])
     return result
 
 
@@ -121,7 +121,7 @@ def get_mass(amino_acid):
     return summ
 
 
-def get_theoretical_spectrum(amino_acid):
+def get_theoretical_spectrum(amino_acid):    # cyclopeptide spectrum
     spectrum = [0]
     length = len(amino_acid)
     for window_size in range(1, length):
@@ -169,4 +169,5 @@ def main():
     print(peptide_count(mass))
 
 
-main()
+if __name__ == "__main__":
+    main()
