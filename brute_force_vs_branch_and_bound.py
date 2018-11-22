@@ -104,84 +104,23 @@ def peptide_to_mass_string(peptide):
     return result[: len(result)-1]
 
 
-def find(score_peptides, score):
-    length = len(score_peptides)
-    for i in range(length):
-        if score_peptides[i][0] == score:
-            return i
-    return -1
-
-
 def trim(leader_board, spectrum, n):
-    score_peptides = []
-    '''for i in range(len(spectrum)+1):
-        score_peptides.append([i, []])
-    numbers = []'''
+    if n >= len(leader_board):
+        return leader_board
+
+    scores = []
     for peptide in leader_board:
-        score = cyclopeptide_score(peptide, spectrum)
-        f = find(score_peptides, score)
-        if f == -1:
-            score_peptides.append([score, [peptide]])
-        else:
-            score_peptides[f][1].append(peptide)
-        '''if score_peptides[score][1] == []:
-            numbers.append(score)
-        score_peptides[score][1].append(peptide)'''
+        scores.append(linear_score(peptide, spectrum))
 
-    score_peptides.sort(reverse=True)
-    # numbers.sort(reverse=True)
+    peptides = leader_board[:]
+    scores, peptides = (list(t) for t in zip(*sorted(zip(scores, peptides), reverse=True)))
 
-    result = []
-    k = min(n, len(score_peptides))
-    # k = min(n, len(numbers))
-    for i in range(k):
-        result += score_peptides[i][1]
-        # result += score_peptides[numbers[i]][1]
+    result = peptides[:n]
+    i = n
+    while i < len(peptides) and scores[i] == scores[n-1]:
+        result.append(peptides[i])
+        i += 1
     return result
-
-
-'''def trim(leader_board, spectrum, n):
-    score_peptides = {}
-    print('Loop1 begin')
-    for peptide in leader_board:
-        score = cyclopeptide_score(peptide, spectrum)
-        if score not in score_peptides:
-            score_peptides.update({score: [peptide]})
-        else:
-            score_peptides[score].append(peptide)
-    print('Loop1 end')
-
-    lst = []
-    for score, peptides in score_peptides.items():
-        lst.append([score, peptides])
-    lst.sort(reverse=True)
-    del score_peptides
-
-    result = []
-    k = min(n, len(lst))
-    for i in range(k):
-        result += lst[i][1]
-    return result'''
-
-
-'''def leader_board_cyclopeptide_sequencing(spectrum, n):
-    leader_board = ['*']
-    leader_peptide = ''
-    pm = parent_mass(spectrum)
-    while len(leader_board) > 0:
-        leader_board = expand(leader_board)
-        to_delete = []
-        for peptide in leader_board:
-            m = mass(peptide)
-            if m == pm:
-                if cyclopeptide_score(peptide, spectrum) > cyclopeptide_score(leader_peptide, spectrum):
-                    leader_peptide = peptide
-            elif m > pm:
-                to_delete.append(peptide)
-        for el in to_delete:
-            leader_board.remove(el)
-        leader_board = trim(leader_board, spectrum, n)
-    return leader_peptide'''
 
 
 def leader_board_cyclopeptide_sequencing(spectrum, n):
@@ -190,21 +129,20 @@ def leader_board_cyclopeptide_sequencing(spectrum, n):
     pm = parent_mass(spectrum)
     while len(leader_board) > 0:
         print(len(leader_board))
-        # print('Expand begin')
         leader_board = expand(leader_board)
-        tmp = []
-        # print('Expand end\nLoop begin')
+        to_delete = []
         for peptide in leader_board:
             m = mass(peptide)
             if m == pm:
-                if cyclopeptide_score(peptide, spectrum) > cyclopeptide_score(leader_peptide, spectrum):
+                # if cyclopeptide_score(peptide, spectrum) > cyclopeptide_score(leader_peptide, spectrum):
+                if linear_score(peptide, spectrum) > linear_score(leader_peptide, spectrum):
                     leader_peptide = peptide
-                tmp.append(peptide)
-            elif m < pm:
-                tmp.append(peptide)
-        # print('Loop end\nTrim begin')
-        leader_board = trim(tmp, spectrum, n)
-        # print('Trim end')
+            elif m > pm:
+                to_delete.append(peptide)
+        for el in to_delete:
+            leader_board.remove(el)
+        if len(leader_board) > 0:
+            leader_board = trim(leader_board, spectrum, n)
     return leader_peptide
 
 
